@@ -380,19 +380,32 @@
       .content-scroll {
         padding-bottom: 150px !important;
       }
+      .mobile-menu-btn,
+      .mobile-menu-backdrop {
+        display: none;
+      }
       @media (max-width: 768px) {
         .dl {
-          flex-direction: column !important;
+          display: block !important;
           height: 100dvh !important;
           min-height: 100dvh !important;
         }
         .sb {
-          width: 100% !important;
+          position: fixed !important;
+          inset: 0 auto 0 0 !important;
+          width: min(86vw, 340px) !important;
           min-width: 0 !important;
-          height: 32dvh !important;
-          max-height: 300px !important;
-          border-right: none !important;
-          border-bottom: 1px solid var(--border) !important;
+          height: 100dvh !important;
+          max-height: none !important;
+          border-right: 1px solid var(--border) !important;
+          border-bottom: none !important;
+          box-shadow: 18px 0 40px rgba(0, 0, 0, 0.35);
+          transform: translateX(-105%);
+          transition: transform 0.2s ease;
+          z-index: 90 !important;
+        }
+        .dl.menu-open .sb {
+          transform: translateX(0);
         }
         .sb > div:first-child {
           padding: 12px 12px 10px !important;
@@ -401,9 +414,23 @@
           display: none !important;
         }
         .mc {
-          height: calc(100dvh - min(32dvh, 300px)) !important;
+          width: 100% !important;
+          height: 100dvh !important;
           min-height: 0 !important;
           padding-bottom: 0 !important;
+        }
+        .mc > div:first-child {
+          padding: 14px 56px 12px !important;
+        }
+        .mc > div:first-child > div:first-child {
+          min-width: 0;
+        }
+        .mc > div:first-child > div:first-child > div:first-child {
+          max-width: calc(100vw - 136px);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 16px !important;
         }
         .content-scroll {
           padding: 16px 16px calc(144px + env(safe-area-inset-bottom)) !important;
@@ -417,6 +444,35 @@
         }
         .pb > div {
           max-width: none !important;
+        }
+        .mobile-menu-btn {
+          position: fixed;
+          top: max(12px, env(safe-area-inset-top));
+          left: max(12px, env(safe-area-inset-left));
+          z-index: 70;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border: 1px solid var(--border);
+          background: var(--glass);
+          color: var(--text2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          backdrop-filter: blur(20px);
+        }
+        .mobile-menu-backdrop {
+          position: fixed;
+          inset: 0 0 0 min(86vw, 340px);
+          z-index: 80;
+          border: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(2px);
+          cursor: pointer;
+        }
+        .dl.menu-open .mobile-menu-backdrop {
+          display: block;
         }
         .player-controls {
           justify-content: center !important;
@@ -451,12 +507,6 @@
         }
       }
       @media (max-width: 420px) {
-        .sb {
-          height: 28dvh !important;
-        }
-        .mc {
-          height: calc(100dvh - 28dvh) !important;
-        }
         .player-controls {
           display: grid !important;
           grid-template-columns: 70px 148px minmax(112px, 1fr);
@@ -818,6 +868,7 @@
         const [filter, setFilter] = useState("all");
         const [search, setSearch] = useState("");
         const [theme, setTheme] = useState("dark");
+        const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
         const [voice, setVoice] = useState("m");
         const [loopMode, setLoopMode] = useState("list");
         const [speed, setSpeed] = useState(1.0);
@@ -1070,6 +1121,7 @@
           setActiveIdx(-1);
           setCi(tracks.findIndex((x) => x.id === t.id));
           setPlaying(true);
+          setMobileMenuOpen(false);
         };
         const seek = (e) => {
           const a = audio.current;
@@ -1301,7 +1353,7 @@
         };
         return (
           <div
-            className="dl"
+            className={"dl " + (mobileMenuOpen ? "menu-open" : "")}
             style={{
               display: "flex",
               height: "100dvh",
@@ -1321,6 +1373,27 @@
                 onEnded={() => setIsPlayingRecord(false)}
               />
             )}
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open question list"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <button
+              className="mobile-menu-backdrop"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close question list"
+            />
             <button
               className="theme-toggle"
               onClick={cycleTheme}
