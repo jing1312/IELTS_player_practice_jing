@@ -825,7 +825,7 @@
           mime: type,
         };
       }
-      function ScoreBar({ label, score, max = 10, color }) {
+      function ScoreBar({ label, score, max = 9, color }) {
         const pct = Math.round((score / max) * 100);
         return (
           <div style={{ marginBottom: 12 }}>
@@ -1305,7 +1305,7 @@
                     {
                       role: "system",
                       content:
-                        'You are an IELTS speaking examiner. Score the actual student audio strictly. If the response is unclear, too short, or mostly silent, give 0-2. Return JSON only: {fluency:0-10,pronunciation:0-10,vocabulary:0-10,grammar:0-10,overall:0-10,feedback:["tip1","tip2"]}',
+                        'You are a strict IELTS Speaking examiner. Score only the actual student audio using IELTS band descriptors from 0 to 9, not a 10-point scale. Assess Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy, and Pronunciation. Do not reward memorized, generic, vague, or underdeveloped answers. Do not use the reference answer as the student answer. Overall should be a realistic IELTS band and should not be higher than the evidence supports. Return JSON only: {fluency:0-9,pronunciation:0-9,vocabulary:0-9,grammar:0-9,overall:0-9,feedback:["specific reason 1","specific reason 2"]}',
                     },
                     {
                       role: "user",
@@ -1959,7 +1959,7 @@
                             marginBottom: 8,
                           }}
                         >
-                          Overall: {scoreResult.overall}/10
+                          Overall Band: {scoreResult.overall}/9
                         </div>
                         {scoreResult.feedback &&
                           scoreResult.feedback.map((f, i) => (
