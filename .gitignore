@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.env
+.env.*
+data.json
+tracks_data.js
+ielts_player.html
+ielts_player_mobile.html
